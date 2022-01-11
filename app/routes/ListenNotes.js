@@ -1,12 +1,12 @@
 require('dotenv').config()
 const express = require('express')
-
 const axios = require('axios')
-
 const router = express.Router()
+
+
 let configByPodcast = {
 	method: 'GET',
-	url: 'https://listen-api.listennotes.com/api/v2/search?q=revolutions&type=podcast',
+	url: 'https://listen-api.listennotes.com/api/v2',
 	headers: {
 		"X-ListenAPI-Key": `${process.env.API_KEY}`
 	}
@@ -21,16 +21,22 @@ let configByGenre = {
 
 
 
-router.get('/by-podcast', (req, res, next) => {
-	axios(configByPodcast)
+router.get('/', (req, res) => {
+	let {query} = req
+	const listenNotesURL = `https://listen-api.listennotes.com/api/v2/search?q=${query.searchTerm}&type=podcast`
+	axios(listenNotesURL, {
+		headers: {
+			"X-ListenAPI-Key": `${process.env.API_KEY}`
+		}
+	})
 		.then(function(response) {
-			console.log(res.json(response.data))
+			res.json(response.data)
 		})
 		.catch(function (error){
 			console.log(error);
 		})
 })
-router.get('/by-genre', (req, res, next) => {
+router.get('/by-genre', (req, res) => {
 	axios(configByGenre)
 		.then(function(response) {
 			console.log(res.json(response.data))
