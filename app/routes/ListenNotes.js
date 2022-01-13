@@ -3,14 +3,6 @@ const express = require('express')
 const axios = require('axios')
 const router = express.Router()
 
-
-let configByPodcast = {
-	method: 'GET',
-	url: 'https://listen-api.listennotes.com/api/v2',
-	headers: {
-		"X-ListenAPI-Key": `${process.env.API_KEY}`
-	}
-}
 let configByGenre = {
 	method: 'GET',
 	url: 'https://listen-api.listennotes.com/api/v2/genres?top_level_only=1',
@@ -18,6 +10,16 @@ let configByGenre = {
 		"X-ListenAPI-Key": `${process.env.API_KEY}`
 	}
 }
+
+router.get('/by-genre', (req, res) => {
+	axios(configByGenre)
+		.then(function(response) {
+			res.json(response.data)
+		})
+		.catch(function (error){
+			console.log(error);
+		})
+})
 
 
 
@@ -36,14 +38,29 @@ router.get('/', (req, res) => {
 			console.log(error);
 		})
 })
-router.get('/by-genre', (req, res) => {
-	axios(configByGenre)
-		.then(function(response) {
-			console.log(res.json(response.data))
-		})
-		.catch(function (error){
-			console.log(error);
-		})
+
+router.get('/podcasts/:id', (req, res) => {
+	const listenNotesURL = `https://listen-api.listennotes.com/api/v2/podcasts/${req.params.id}`
+	axios(listenNotesURL, {
+		headers: {
+			"X-ListenAPI-Key": `${process.env.API_KEY}`
+		}
+	})
+	.then(function(response) {
+		res.json(response.data)
+	})
+	.catch(function (error){
+		console.log(error);
+	})
 })
+
+
+
+
+
+
+
+
+
 
 module.exports = router
